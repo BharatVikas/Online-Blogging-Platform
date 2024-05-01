@@ -12,7 +12,7 @@ const port = 8081;
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://localhost:27017/blogbuster');
+mongoose.connect('mongodb+srv://vicky:admin@cluster0.q8y48za.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/blogbuster');
 
 const User = mongoose.model(
   'User',
@@ -34,7 +34,6 @@ const BlogPostSchema = new mongoose.Schema(
     tags: [String],
     media: String,
     privacy: String,
-    author: { username: String },
     publicationDate: {
       type: Date,
       default: Date.now,
@@ -195,3 +194,4 @@ app.post('/api/logout', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+

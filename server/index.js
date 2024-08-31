@@ -9,7 +9,7 @@ const nodemailer = require('nodemailer');
 const app = express();
 const port = 8081;
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: 'https://online-blogging-platform.vercel.app', credentials: true }));
 app.use(bodyParser.json());
 
 mongoose.connect('mongodb+srv://vicky:admin@cluster0.q8y48za.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/blogbuster');

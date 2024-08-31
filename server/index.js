@@ -5,15 +5,29 @@ const cors = require('cors');
 const multer = require('multer');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+require('dotenv').config(); // Load environment variables from .env file
 
 const app = express();
-const port = 8081;
+const port = process.env.PORT || 8081;
 
-app.use(cors({ origin: 'https://online-blogging-platform.vercel.app', credentials: true }));
+// CORS configuration
+const corsOptions = {
+  origin: 'https://online-blogging-platform.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb+srv://vicky:admin@cluster0.q8y48za.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/blogbuster');
+// Connect to MongoDB using environment variables for security
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
+// Define the User model
 const User = mongoose.model(
   'User',
   new mongoose.Schema(
@@ -27,6 +41,7 @@ const User = mongoose.model(
   )
 );
 
+// Define the BlogPost model
 const BlogPostSchema = new mongoose.Schema(
   {
     title: String,
@@ -44,6 +59,7 @@ const BlogPostSchema = new mongoose.Schema(
 
 const BlogPost = mongoose.model('BlogPost', BlogPostSchema);
 
+// Configure multer for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -55,6 +71,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+/ Function to generate OTP
 const generateOTP = () => {
   const digits = '0123456789';
   let OTP = '';
@@ -64,6 +81,7 @@ const generateOTP = () => {
   return OTP;
 };
 
+// Signup route
 app.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -75,7 +93,7 @@ app.post('/signup', async (req, res) => {
 
     const otp = generateOTP();
     const mailOptions = {
-      from: 'bharatvikas04062004@gmail.com', // Your Gmail email address
+      from: process.env.EMAIL_USER, // Your Gmail email address
       to: email,
       subject: 'Verification from Blogbuster',
       text: `Your OTP is: ${otp}`,
@@ -95,6 +113,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+// OTP verification route
 app.post('/verify-otp', async (req, res) => {
   const { email, otp } = req.body;
 
@@ -116,6 +135,7 @@ app.post('/verify-otp', async (req, res) => {
   }
 });
 
+// Login route
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -142,6 +162,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Blog post submission route
 app.post('/api/blog', upload.single('media'), async (req, res) => {
   try {
     const { title, content, tags, privacy, author } = req.body;
@@ -165,6 +186,7 @@ app.post('/api/blog', upload.single('media'), async (req, res) => {
   }
 });
 
+// Blog feed retrieval route
 app.get('/api/feed', async (req, res) => {
   try {
     const blogPosts = await BlogPost.find();
@@ -175,13 +197,11 @@ app.get('/api/feed', async (req, res) => {
   }
 });
 
-// Logout endpoint
+// Logout route
 app.post('/api/logout', async (req, res) => {
   try {
-    // Clear any session-related data here
-    // For example, if using session-based authentication, destroy the session
-    // For now, let's assume you're clearing the session cookie
-    res.clearCookie('sessionID'); // Assuming the session cookie is named 'sessionID'
+    // Clear session-related data (e.g., session cookies)
+    res.clearCookie('sessionID');
 
     console.log('Logout successful');
     res.status(200).json({ message: 'Logout successful' });
@@ -194,4 +214,3 @@ app.post('/api/logout', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-

@@ -97,15 +97,15 @@ const Login = () => {
       message: 'Login Attempt',
       description: message,
       placement: 'top',
-      duration: 3, 
+      duration: 3,
     });
   };
 
   const onFinish = async (values) => {
     try {
-      const response = await axios.post('http://localhost:8081/login', values, { withCredentials: true });
+      const response = await axios.post('https://online-blogging-platform-vafr.vercel.app/login', values, { withCredentials: true });
       console.log(response);
-  navigate('/home');
+      navigate('/home');
       openNotification('success', 'You have successfully logged in!');
     } catch (error) {
       console.error('Login failed:', error.message);

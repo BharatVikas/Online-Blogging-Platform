@@ -80,7 +80,7 @@ const Signup = () => {
 
   const handleSignup = async () => {
     try {
-      const response = await axios.post('https://online-blogging-platform-vafr.vercel.app/signup', formData);
+      const response = await axios.post('https://localhost:8081/signup', formData);
       if (response.status === 201) {
         setOtpSent(true);
         setOtpAttempts(0);
@@ -96,7 +96,7 @@ const Signup = () => {
 
   const handleOTPVerification = async () => {
     try {
-      const response = await axios.post('https://online-blogging-platform-vafr.vercel.app/verify-otp', formData);
+      const response = await axios.post('https://localhst:8081/verify-otp', formData);
       if (response.status === 200) {
         openNotification('success', 'OTP verified successfully! You can now log in.');
         navigate('/login');
